@@ -34,7 +34,7 @@
 	{
 		echo $string . "\n";
 
-		file_put_contents( SomeShit::$config['log_file'], '[' . date( 'Y/m/d H:i:s' ) . '] ' . $string, FILE_APPEND  );
+		file_put_contents( SomeShit::$config['log_file'], '[' . date( 'Y/m/d H:i:s' ) . '] '."\n" . $string, FILE_APPEND  );
 	}
 
 	class SoapAuthExeption extends Exception{};
