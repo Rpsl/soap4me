@@ -16,6 +16,41 @@
 		}
 	});
 
+	$pid_file = realpath( __DIR__ ) . '/download.pid';
+	$pid      = getmypid();
+
+	if( !$pid )
+	{
+		// @todo что тут делать ?
+		die();
+	}
+
+	// Проверяем что у нас не просто есть пид, а что такой процесс действительно живет.
+	if( file_exists( $pid_file ) )
+	{
+		$check_pid = trim( file_get_contents( $pid_file ) );
+
+		// @todo В windows рабоатть не будеь
+		if( !file_exists( "/proc/$check_pid" ) )
+		{
+			@unlink( $pid_file );
+		}
+		else
+		{
+			die();
+		}
+
+	}
+
+	// На моем насе были проблемы с вызовом mkdir(). Функция не хотела работать,
+	// в то время, как вызовы нативных команд работали прекрасно.
+	// Быть может это из-за SPARC, но там супер урезанный линукс и пыха в таком состояние.
+	// В итоге оказалось проще все подобные вызовы перевести на shell_exec()
+
+	shell_exec( 'touch ' . $pid_file );
+	shell_exec( "echo '$pid' > " . $pid_file );
+
+
 	require_once realpath( __DIR__ ) . '/config.php';
 
 	try
@@ -24,6 +59,9 @@
 
 		$Soap = new Soap4me();
 		$Soap->downloadNew();
+
+		shell_exec( 'chmod -R 0777 ' . SomeShit::$config[ 'download_dir' ] );
+
 	}
 	catch ( Exception $e )
 	{
@@ -36,5 +74,7 @@
 
 		file_put_contents( SomeShit::$config['log_file'], '[' . date( 'Y/m/d H:i:s' ) . '] '."\n" . $string, FILE_APPEND  );
 	}
+
+
 
 	class SoapAuthExeption extends Exception{};
