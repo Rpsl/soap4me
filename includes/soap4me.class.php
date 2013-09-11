@@ -90,6 +90,11 @@
 					{
 						l("Start download " . $this->getTextEpisodName( $episod ) );
 
+						if( file_exists( $episod['path'] ) )
+						{
+							unlink( $episod['path'] );
+						}
+
 						$url = sprintf(
 							'https://%s.soap4.me/%s/%s/%s/',
 							$res['server'],

@@ -45,7 +45,6 @@
 	shell_exec( 'touch ' . $pid_file );
 	shell_exec( "echo '$pid' > " . $pid_file );
 
-
 	require_once realpath( __DIR__ ) . '/config.php';
 
 	try
