@@ -139,7 +139,7 @@
 			$data = array(
 				'from'    => 'Turbofilm downloader <turboload@'. SomeShit::$config['mailgun']['domain'].'>',
 				'to'      => implode(', ', SomeShit::$config['email']),
-				'subject' => 'TurboLoader | ' . $episod['serial'] . ' | ' . $episod['name'],
+				'subject' => 'TurboLoader | ' . $episod['serial'],
 				'text'    => 'Серия ' . $this->getTextEpisodName( $episod )  . ' закачана.',
 				'html'    => '<html><p>Серия ' . $this->getTextEpisodName( $episod ) . ' закачана.</p><p>&nbsp;</p><p>' . $episod['path'] . '</p></html>',
 			);
