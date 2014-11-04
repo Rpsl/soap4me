@@ -203,6 +203,9 @@
 						unset( $episodes[ $serial_name ][ $ep ]['SD'] );
 					}
 				}
+
+				// чтобы качать с первой серии.
+				$episodes[$serial_name] = array_reverse( $episodes[$serial_name], true );
 			}
 
 			return $episodes;
