@@ -1,65 +1,62 @@
 <?php
 
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Symfony\Component\Dotenv\Dotenv;
+
+use Soap4me\Parser;
+use Soap4me\Downloader;
+use Soap4me\DownloaderTransport\Aria2;
+use Soap4me\Notify\MailgunNotify;
+
 setlocale(LC_CTYPE, "en_US.UTF-8");
-
-error_reporting(E_ALL);
-ini_set('display_startup_errors', 1);
-ini_set('display_errors', 1);
-
 date_default_timezone_set('Europe/Moscow');
 
-spl_autoload_register(function ($class_name) {
-    if (file_exists(realpath(__DIR__) . '/includes/' . strtolower($class_name) . '.class.php')) {
-        require_once(realpath(__DIR__) . '/includes/' . strtolower($class_name) . '.class.php');
-    }
-});
+include_once 'vendor/autoload.php';
 
-$pid_file = realpath(__DIR__) . '/download.pid';
-$pid = getmypid();
+// @todo pid ?
 
-if (!$pid) {
-    // @todo что тут делать ?
-    die();
-}
-
-// Проверяем что у нас не просто есть пид, а что такой процесс действительно живет.
-if (file_exists($pid_file)) {
-    $check_pid = trim(file_get_contents($pid_file));
-
-    // @todo В windows рабоатть не будеь
-    if (!file_exists("/proc/$check_pid")) {
-        @unlink($pid_file);
-    } else {
-        die();
-    }
-
-}
-
-shell_exec('touch ' . $pid_file);
-shell_exec("echo '$pid' > " . $pid_file);
-
-require_once realpath(__DIR__) . '/config.php';
+$dotenv = new Dotenv();
+$dotenv->load(__DIR__ . '/.env');
 
 try {
-    l('Start');
-
-    $Soap = new Soap4me();
-    $Soap->downloadNew();
-
-    shell_exec('chmod -R 0777 ' . SomeShit::$config['download_dir']);
-
+    $log = new Logger('logger');
+    // @todo log level to params
+    $log->pushHandler(new StreamHandler($_ENV["LOG_FILE"], Logger::DEBUG));
 } catch (Exception $e) {
-    l($e->getMessage());
 }
 
-function l($string)
-{
-    echo $string . "\n";
+try {
+    $log->info('Start processing');
 
-    file_put_contents(SomeShit::$config['log_file'], '[' . date('Y/m/d H:i:s') . '] ' . "\n" . $string, FILE_APPEND);
-}
+    // @todo need DI
+    $parser = new Parser(
+        $log,
+        $_ENV['SOAP_LOGIN'],
+        $_ENV['SOAP_PASSWORD']
+    );
 
+    $transport = new Aria2(
+        $log,
+        new Filesystem(new Local(realpath(dirname($_ENV["DOWNLOAD_DIR"]))))
+    );
 
-class SoapAuthExeption extends Exception
-{
+    $notify = new MailgunNotify($log, [
+        'from' => $_ENV["MAILGUN_FROM"],
+        'to' => $_ENV["NOTIFY_EMAIL"],
+        'domain' => $_ENV["MAILGUN_DOMAIN"],
+        'key' => $_ENV["MAILGUN_KEY"],
+    ]);
+
+    (new Downloader($log, $transport))
+        ->addBatch($parser->findUnwatched())
+        ->setNotify($notify)
+        ->download();
+
+    $log->info("Finish");
+} catch (Exception $e) {
+    $log->error($e->getMessage());
+    throw new $e;
 }

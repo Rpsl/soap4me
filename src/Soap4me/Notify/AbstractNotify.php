@@ -1,0 +1,22 @@
+<?php declare(strict_types=1);
+
+namespace Soap4me\Notify;
+
+use Psr\Log\LoggerInterface;
+use Soap4me\Episode;
+
+abstract class AbstractNotify
+{
+    /** @var LoggerInterface */
+    protected $logger;
+
+    public function __construct(LoggerInterface $logger, array $config)
+    {
+        $this->logger = $logger;
+    }
+
+    public function notify(Episode $episode)
+    {
+
+    }
+}

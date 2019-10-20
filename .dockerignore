@@ -1,0 +1,6 @@
+downloads/
+.env
+cookie*
+.idea
+.git
+vendor
