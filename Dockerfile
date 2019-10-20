@@ -7,8 +7,7 @@ RUN apt-get update && \
     apt-get install -y aria2 unzip
 
 RUN docker-php-ext-install -j$(nproc) pcntl && \
-    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
-    sed -i -e 's/;phar.readonly = On/phar.readonly = Off/g' "$PHP_INI_DIR/php.ini"
+    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 RUN rm -rf /var/lib/apt/lists/*
 
