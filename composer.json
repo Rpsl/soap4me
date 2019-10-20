@@ -1,0 +1,27 @@
+{
+    "name": "rpsl/soap4me",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Rpsl",
+            "email": "gmail@rpsl.info"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Soap4me\\": "src/Soap4me"
+        }
+    },
+    "require": {
+        "symfony/dotenv": "^4.3",
+        "monolog/monolog": "^2.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "electrolinux/phpquery": "^0.9.6",
+        "league/flysystem": "^1.0",
+        "ptlis/shell-command": "^1.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "kherge/box": "^2.7"
+    }
+}
