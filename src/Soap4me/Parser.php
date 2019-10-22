@@ -2,8 +2,8 @@
 
 namespace Soap4me;
 
-use Psr\Log\LoggerInterface;
 use phpQuery;
+use Psr\Log\LoggerInterface;
 use Soap4me\Exception\CurlException;
 use Soap4me\Exception\ParseException;
 use Soap4me\Exception\QualityException;

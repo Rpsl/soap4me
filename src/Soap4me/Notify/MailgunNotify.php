@@ -4,7 +4,6 @@ namespace Soap4me\Notify;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Psr\Log\LoggerInterface;
 use Soap4me\Episode;
 
 class MailgunNotify extends AbstractNotify

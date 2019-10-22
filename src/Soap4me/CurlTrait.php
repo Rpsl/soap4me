@@ -2,11 +2,11 @@
 
 namespace Soap4me;
 
-use GuzzleHttp\Cookie\FileCookieJar;
-use Soap4me\Exception\CurlException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\FileCookieJar;
 use GuzzleHttp\Exception\GuzzleException;
+use Soap4me\Exception\CurlException;
 
 trait CurlTrait
 {
