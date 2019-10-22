@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Soap4me;
 
 use Psr\Log\LoggerInterface;
@@ -22,7 +21,7 @@ class Parser
     /** @var string */
     private $password;
 
-    public function __construct(LoggerInterface $logger, $login, $password)
+    public function __construct(LoggerInterface $logger, string $login, string $password)
     {
         $this->logger = $logger;
         $this->login = $login;
@@ -46,7 +45,6 @@ class Parser
             $this->logger->error($e->getMessage());
             return [];
         }
-
 
         $res = phpQuery::newDocumentHTML($html, $charset = 'utf-8');
 
@@ -78,6 +76,9 @@ class Parser
         return $unwatched;
     }
 
+    /**
+     * @return bool
+     */
     private function isNeedLogin(): bool
     {
         $result = null;
@@ -85,7 +86,7 @@ class Parser
         try {
             $result = $this->curl('/');
 
-            if (preg_match('~(вход на сайт)~usi', $result)) {
+            if ((bool)preg_match('~(вход на сайт)~usi', $result)) {
                 return true;
             }
 
@@ -95,12 +96,15 @@ class Parser
         }
     }
 
-    private function login()
+    /**
+     * @return bool
+     */
+    private function login(): bool
     {
         try {
             $res = $this->curl('/login/', [
                 'login' => $this->login,
-                'password' => $this->password
+                'password' => $this->password,
             ]);
         } catch (CurlException $e) {
             $this->logger->error($e->getMessage());
@@ -120,7 +124,7 @@ class Parser
      */
     private function parseEpisodeNumber(string $string): int
     {
-        if (!preg_match('/s([0-9]+)e([0-9]+)/', $string, $matches)) {
+        if (!(bool)preg_match('/s([0-9]+)e([0-9]+)/', $string, $matches)) {
             throw new ParseException(sprintf("Can't parse episode number :: %s", $string));
         }
 

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Soap4me;
-
 
 use Psr\Log\LoggerInterface;
 use Soap4me\DownloaderTransport\AbstractTransport;
@@ -58,7 +56,7 @@ class Downloader
     /**
      * @param Episode $episode
      */
-    public function add(Episode $episode)
+    public function add(Episode $episode): void
     {
         $this->logger->info(sprintf(
             "Add episode %s - S%02dE%02d (%s) %s",
@@ -72,7 +70,7 @@ class Downloader
         $this->queue[] = $episode;
     }
 
-    public function download()
+    public function download(): void
     {
         $this->filter();
 
@@ -100,7 +98,7 @@ class Downloader
         $tmpQueue = [];
 
         foreach ($this->queue as $v) {
-            if (empty($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
+            if (isset($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
                 $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
             } else {
                 /** @var Episode $existing */

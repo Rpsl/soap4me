@@ -19,7 +19,7 @@ abstract class AbstractNotify
         $this->config = $config;
     }
 
-    public function notify(Episode $episode)
+    public function notify(Episode $episode): bool
     {
 
     }

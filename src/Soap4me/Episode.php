@@ -2,7 +2,6 @@
 
 namespace Soap4me;
 
-
 use Soap4me\Exception\CurlException;
 use Soap4me\Exception\QualityException;
 
@@ -28,7 +27,7 @@ class Episode
     /** @var string $show TV Show name */
     private $show;
 
-    /** @var string $name TV Show episode title */
+    /** @var string $title TV Show episode title */
     private $title;
 
     /** @var int $season TV Show season number */
@@ -57,6 +56,7 @@ class Episode
 
     /**
      * Episode constructor.
+     *
      * @param string $show
      * @param string $title
      * @param int $season
@@ -81,8 +81,7 @@ class Episode
         int $eid,
         int $sid,
         string $token
-    )
-    {
+    ) {
         $this->show = $show;
         $this->title = $title;
         $this->season = $season;
@@ -127,9 +126,11 @@ class Episode
      *
      * @param string $quality
      *
+     * @return void
+     *
      * @throws QualityException
      */
-    public function setQuality(string $quality)
+    public function setQuality(string $quality): void
     {
         if (isset(self::$QUALITY_RANK[$quality])) {
             $this->quality = $quality;
@@ -144,12 +145,19 @@ class Episode
      *
      * @return string
      */
-    public function getQuality()
+    public function getQuality(): string
     {
         return $this->quality;
     }
 
-    public function isBetterQualityThen(string $quality)
+    /**
+     * Compare quality of this episode and another
+     *
+     * @param string $quality
+     *
+     * @return bool
+     */
+    public function isBetterQualityThen(string $quality): bool
     {
         if (self::$QUALITY_RANK[$this->getQuality()] > self::$QUALITY_RANK[$quality]) {
             return true;
@@ -207,9 +215,11 @@ class Episode
     }
 
     /**
+     * @return bool
+     *
      * @throws CurlException
      */
-    public function markAsWatched()
+    public function markAsWatched(): bool
     {
         $payload = [
             'eid' => $this->eid,
@@ -219,7 +229,7 @@ class Episode
 
         $result = json_decode($this->curl('/callback/', $payload), true);
 
-        if (empty($result['ok'])) {
+        if (!isset($result['ok'])) {
             throw new CurlException(sprintf(
                 "unknown responce when mark episode as watched :: %s",
                 var_export($result, true)
@@ -267,7 +277,12 @@ class Episode
         return addslashes($replaced);
     }
 
-    private function getHash()
+    /**
+     * Return hash string for episode url
+     *
+     * @return string
+     */
+    private function getHash(): string
     {
         return md5(sprintf(
             "%s%s%s%s",

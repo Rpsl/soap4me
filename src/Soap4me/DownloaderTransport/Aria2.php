@@ -1,18 +1,15 @@
 <?php declare(strict_types=1);
 
-
 namespace Soap4me\DownloaderTransport;
-
 
 use League\Flysystem\FileNotFoundException;
 use ptlis\ShellCommand\CommandBuilder;
 use Soap4me\Episode;
 use Soap4me\Exception\CurlException;
 
-
 class Aria2 extends AbstractTransport
 {
-    public function download(Episode $episode)
+    public function download(Episode $episode): bool
     {
         $this->logger->info(sprintf(
             "download %s S%02dE%02d %s (%s) to %s",
@@ -78,7 +75,14 @@ class Aria2 extends AbstractTransport
         return true;
     }
 
-    private function exec(Episode $episode)
+    /**
+     * Download execution
+     *
+     * @param Episode $episode
+     *
+     * @return bool
+     */
+    private function exec(Episode $episode): bool
     {
         try {
             $url = $episode->getUrl();
@@ -97,7 +101,7 @@ class Aria2 extends AbstractTransport
                 '--max-file-not-found=5',
                 '--max-tries=5',
                 '--retry-wait=5',
-                '--http-accept-gzip'
+                '--http-accept-gzip',
             ])
             ->addRawArgument(sprintf('--out="%s"', addslashes($episode->getEpisodePath())))
             ->addArgument($url)

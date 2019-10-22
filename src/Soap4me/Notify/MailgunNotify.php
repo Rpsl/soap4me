@@ -9,7 +9,7 @@ use Soap4me\Episode;
 
 class MailgunNotify extends AbstractNotify
 {
-    public function notify(Episode $episode)
+    public function notify(Episode $episode): bool
     {
         $client = new Client([
             'timeout' => 5.0,
@@ -21,10 +21,11 @@ class MailgunNotify extends AbstractNotify
                 'to' => $this->config['to'],
                 'subject' => $episode->getShow(),
                 'text' => strip_tags($this->getBody($episode)),
-                'html' => $this->getBody($episode)
+                'html' => $this->getBody($episode),
             ],
             'auth' => [
-                'api', $this->config['key']
+                'api',
+                $this->config['key'],
             ],
         ];
 
@@ -40,7 +41,14 @@ class MailgunNotify extends AbstractNotify
         return true;
     }
 
-    private function getBody(Episode $episode)
+    /**
+     * Return html body for email notifycation
+     *
+     * @param Episode $episode
+     *
+     * @return string
+     */
+    private function getBody(Episode $episode): string
     {
         return sprintf(
             "<html><p>Серия %s закачана.</p><p>%s</p></html>",

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Soap4me;
-
 
 use GuzzleHttp\Cookie\FileCookieJar;
 use Soap4me\Exception\CurlException;
@@ -22,7 +20,6 @@ trait CurlTrait
      */
     private function curl(string $url, array $data = [])
     {
-
         $client = new Client([
             'base_uri' => 'https://soap4.me',
             'timeout' => 5.0,
@@ -30,10 +27,9 @@ trait CurlTrait
 
         $method = "GET";
 
-        $payload = $this->getPayload();
+        $payload = $this->getDefaultOptions();
 
-
-        if (!empty($data)) {
+        if (count($data) > 0) {
             $method = "POST";
             $payload['form_params'] = $data;
         }
@@ -50,32 +46,32 @@ trait CurlTrait
             }
 
             return $r->getBody()->getContents();
-
-
         } catch (GuzzleException $e) {
             throw new CurlException(sprintf(
                 'Not 200 responce code | %d | url: %s',
-                !empty($r) ? $r->getStatusCode() : -1,
+                isset($r) ? $r->getStatusCode() : -1,
                 $url
             ));
         }
     }
 
     /**
+     * Return default options for Guzzle request
+     *
      * @return array
      */
-    private function getPayload(): array
+    private function getDefaultOptions(): array
     {
         $payload = [
             'cookies' => $this->getCookies(),
             'headers' => [
                 'Referer' => 'https://soap4.me/',
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
             ],
             'allow_redirects' => true,
             'delay' => mt_rand(1, 5) * 1000,
             'version' => 1.0,
-            'debug' => false
+            'debug' => false, // @todo to config
         ];
         return $payload;
     }
