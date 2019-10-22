@@ -55,7 +55,7 @@ trait CurlTrait
         } catch (GuzzleException $e) {
             throw new CurlException(sprintf(
                 'Not 200 responce code | %d | url: %s',
-                $r->getStatusCode(),
+                !empty($r) ? $r->getStatusCode() : -1,
                 $url
             ));
         }

@@ -80,6 +80,8 @@ class Parser
 
     private function isNeedLogin(): bool
     {
+        $result = null;
+
         try {
             $result = $this->curl('/');
 

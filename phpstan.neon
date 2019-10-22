@@ -1,0 +1,7 @@
+parameters:
+    #reportUnmatchedIgnoredErrors: false
+    inferPrivatePropertyTypeFromConstructor: true
+    ignoreErrors:
+        - '#Call to method (.*?) on an unknown class QueryTemplate[a-zA-Z]#'
+        - '#Iterating over an object of an unknown class QueryTemplates[a-zA-Z]#'
+        - '#(.*?)markup of static method phpQuery::newDocumentHTML(.*?)#'

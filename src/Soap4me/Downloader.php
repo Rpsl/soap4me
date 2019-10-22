@@ -20,7 +20,7 @@ class Downloader
     /** @var Episode[] */
     private $queue = [];
 
-    /** @var AbstractNotify */
+    /** @var AbstractNotify|null */
     private $notify;
 
     public function __construct(LoggerInterface $logger, AbstractTransport $transport)

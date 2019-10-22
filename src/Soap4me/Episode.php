@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Soap4me;
 
@@ -250,9 +249,22 @@ class Episode
         return $res['server'];
     }
 
+    /**
+     * @param string $string
+     *
+     * @return string
+     * @todo normalize
+     *
+     */
     private function escapePath(string $string): string
     {
-        return addslashes(preg_replace('/[^A-Za-z0-9!? _\-]/', ' ', $string));
+        $replaced = preg_replace('/[^A-Za-z0-9!? _\-]/', ' ', $string);
+
+        if (is_null($replaced)) {
+            throw new \LogicException(sprintf("Can not escape string :: %s", $string));
+        }
+
+        return addslashes($replaced);
     }
 
     private function getHash()

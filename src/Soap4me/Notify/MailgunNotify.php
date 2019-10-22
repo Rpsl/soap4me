@@ -9,28 +9,6 @@ use Soap4me\Episode;
 
 class MailgunNotify extends AbstractNotify
 {
-    /** @var string */
-    private $from;
-
-    /** @var string */
-    private $to;
-
-    /** @var string */
-    private $domain;
-
-    /** @var string */
-    private $key;
-
-    public function __construct(LoggerInterface $logger, array $config)
-    {
-        parent::__construct($logger, $config);
-
-        $this->from = $config['from'];
-        $this->to = $config['to'];
-        $this->domain = $config['domain'];
-        $this->key = $config['key'];
-    }
-
     public function notify(Episode $episode)
     {
         $client = new Client([
@@ -39,20 +17,21 @@ class MailgunNotify extends AbstractNotify
 
         $payload = [
             'form_params' => [
-                'from' => $this->from,
-                'to' => $this->to,
+                'from' => $this->config['from'],
+                'to' => $this->config['to'],
                 'subject' => $episode->getShow(),
                 'text' => strip_tags($this->getBody($episode)),
                 'html' => $this->getBody($episode)
             ],
             'auth' => [
-                'api', $this->key
+                'api', $this->config['key']
             ],
         ];
 
+        $url = sprintf("https://api.mailgun.net/v3/%s/messages", $this->config['domain']);
 
         try {
-            $r = $client->request("POST", 'https://api.mailgun.net/v3/' . $_ENV['MAILGUN_DOMAIN'] . '/messages', $payload);
+            $r = $client->request("POST", $url, $payload);
         } catch (GuzzleException $e) {
             $this->logger->error($e->getMessage());
         }
