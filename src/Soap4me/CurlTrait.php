@@ -10,7 +10,8 @@ use Soap4me\Exception\CurlException;
 
 trait CurlTrait
 {
-    private $baseUrl = 'https://soap4.me';
+    /** @var string $baseUrl */
+    protected $baseUrl = 'https://soap4.me';
 
     /**
      * @param string $url

@@ -5,6 +5,9 @@ namespace Soap4me;
 use Soap4me\Exception\CurlException;
 use Soap4me\Exception\QualityException;
 
+/**
+ * @property-read string $baseUrl
+ */
 class Episode
 {
     use CurlTrait;

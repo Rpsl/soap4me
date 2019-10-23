@@ -8,6 +8,9 @@ use Soap4me\Exception\CurlException;
 use Soap4me\Exception\ParseException;
 use Soap4me\Exception\QualityException;
 
+/**
+ * @property-read string $baseUrl
+ */
 class Parser
 {
     use CurlTrait;
