@@ -68,8 +68,8 @@ class Aria2 extends AbstractTransport
      */
     private function createDir(Episode $episode): bool
     {
-        if (!$this->filesystem->has(dirname($episode->getSeasonPath()))) {
-            return $this->filesystem->createDir(dirname($episode->getSeasonPath()));
+        if (!$this->filesystem->has($episode->getSeasonPath())) {
+            return $this->filesystem->createDir($episode->getSeasonPath());
         }
 
         return true;

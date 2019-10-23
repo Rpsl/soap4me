@@ -10,6 +10,8 @@ use Soap4me\Exception\CurlException;
 
 trait CurlTrait
 {
+    private $baseUrl = 'https://soap4.me';
+
     /**
      * @param string $url
      * @param array $data
@@ -21,7 +23,7 @@ trait CurlTrait
     private function curl(string $url, array $data = [])
     {
         $client = new Client([
-            'base_uri' => 'https://soap4.me',
+            'base_uri' => $this->baseUrl,
             'timeout' => 5.0,
         ]);
 

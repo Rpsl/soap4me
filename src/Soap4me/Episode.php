@@ -111,14 +111,14 @@ class Episode
     public function getSeasonPath(): string
     {
         // @todo DOWNLOAD_DIR
-        return sprintf(
+        return dirname(sprintf(
             "%s%s/Season %02d/%02d %s.mp4",
             $_ENV['DOWNLOAD_DIR'],
             $this->escapePath($this->show),
             $this->season,
             $this->number,
             $this->escapePath($this->title)
-        );
+        ));
     }
 
     /**
@@ -151,7 +151,7 @@ class Episode
     }
 
     /**
-     * Compare quality of this episode and another
+     * Compare quality of this episode with another
      *
      * @param string $quality
      *
