@@ -1,0 +1,12 @@
+language: php
+php:
+  - '7.3'
+
+install:
+  - travis_retry composer self-update && composer --version
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry composer install --no-interaction --prefer-dist
+
+script:
+  - vendor/bin/phpstan analyse -l max -c phpstan.neon src --no-interaction --no-progress
+  - vendor/bin/phpunit -c phpunit.xml tests/

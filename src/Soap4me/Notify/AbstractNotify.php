@@ -10,12 +10,16 @@ abstract class AbstractNotify
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var array */
+    protected $config;
+
     public function __construct(LoggerInterface $logger, array $config)
     {
         $this->logger = $logger;
+        $this->config = $config;
     }
 
-    public function notify(Episode $episode)
+    public function notify(Episode $episode): bool
     {
 
     }

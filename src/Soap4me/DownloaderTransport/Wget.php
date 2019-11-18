@@ -1,18 +1,15 @@
 <?php declare(strict_types=1);
 
-
 namespace Soap4me\DownloaderTransport;
-
 
 use League\Flysystem\FileNotFoundException;
 use ptlis\ShellCommand\CommandBuilder;
 use Soap4me\Episode;
 use Soap4me\Exception\CurlException;
 
-
 class Wget extends AbstractTransport
 {
-    public function download(Episode $episode)
+    public function download(Episode $episode): bool
     {
         $this->logger->info(sprintf(
             "download %s S%02dE%02d %s (%s) to %s",
@@ -71,14 +68,21 @@ class Wget extends AbstractTransport
      */
     private function createDir(Episode $episode): bool
     {
-        if (!$this->filesystem->has(dirname($episode->getSeasonPath()))) {
-            return $this->filesystem->createDir(dirname($episode->getSeasonPath()));
+        if (!$this->filesystem->has($episode->getSeasonPath())) {
+            return $this->filesystem->createDir($episode->getSeasonPath());
         }
 
         return true;
     }
 
-    private function exec(Episode $episode)
+    /**
+     * Download execution
+     *
+     * @param Episode $episode
+     *
+     * @return bool
+     */
+    private function exec(Episode $episode): bool
     {
         try {
             $url = $episode->getUrl();

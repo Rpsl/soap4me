@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Soap4me\DownloaderTransport;
 
@@ -9,6 +8,7 @@ use Soap4me\Episode;
 
 abstract class AbstractTransport
 {
+    /** @var LoggerInterface */
     protected $logger;
 
     /** @var FilesystemInterface */
@@ -20,7 +20,7 @@ abstract class AbstractTransport
         $this->filesystem = $filesystem;
     }
 
-    public function download(Episode $episode)
+    public function download(Episode $episode): bool
     {
 
     }

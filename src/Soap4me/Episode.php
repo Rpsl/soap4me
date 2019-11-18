@@ -1,12 +1,13 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Soap4me;
-
 
 use Soap4me\Exception\CurlException;
 use Soap4me\Exception\QualityException;
 
+/**
+ * @property-read string $baseUrl
+ */
 class Episode
 {
     use CurlTrait;
@@ -29,7 +30,7 @@ class Episode
     /** @var string $show TV Show name */
     private $show;
 
-    /** @var string $name TV Show episode title */
+    /** @var string $title TV Show episode title */
     private $title;
 
     /** @var int $season TV Show season number */
@@ -58,6 +59,7 @@ class Episode
 
     /**
      * Episode constructor.
+     *
      * @param string $show
      * @param string $title
      * @param int $season
@@ -82,8 +84,7 @@ class Episode
         int $eid,
         int $sid,
         string $token
-    )
-    {
+    ) {
         $this->show = $show;
         $this->title = $title;
         $this->season = $season;
@@ -101,9 +102,10 @@ class Episode
     {
         // @todo DOWNLOAD_DIR
         return sprintf(
-            "%s%s/Season %02d/%02d %s.mp4",
+            "%s%s/Season %02d/s%02de%02d %s.mp4",
             $_ENV['DOWNLOAD_DIR'],
             $this->escapePath($this->show),
+            $this->season,
             $this->season,
             $this->number,
             $this->escapePath($this->title)
@@ -113,14 +115,7 @@ class Episode
     public function getSeasonPath(): string
     {
         // @todo DOWNLOAD_DIR
-        return sprintf(
-            "%s%s/Season %02d/%02d %s.mp4",
-            $_ENV['DOWNLOAD_DIR'],
-            $this->escapePath($this->show),
-            $this->season,
-            $this->number,
-            $this->escapePath($this->title)
-        );
+        return dirname($this->getEpisodePath());
     }
 
     /**
@@ -128,9 +123,11 @@ class Episode
      *
      * @param string $quality
      *
+     * @return void
+     *
      * @throws QualityException
      */
-    public function setQuality(string $quality)
+    public function setQuality(string $quality): void
     {
         if (isset(self::$QUALITY_RANK[$quality])) {
             $this->quality = $quality;
@@ -145,12 +142,19 @@ class Episode
      *
      * @return string
      */
-    public function getQuality()
+    public function getQuality(): string
     {
         return $this->quality;
     }
 
-    public function isBetterQualityThen(string $quality)
+    /**
+     * Compare quality of this episode with another
+     *
+     * @param string $quality
+     *
+     * @return bool
+     */
+    public function isBetterQualityThen(string $quality): bool
     {
         if (self::$QUALITY_RANK[$this->getQuality()] > self::$QUALITY_RANK[$quality]) {
             return true;
@@ -208,9 +212,11 @@ class Episode
     }
 
     /**
+     * @return bool
+     *
      * @throws CurlException
      */
-    public function markAsWatched()
+    public function markAsWatched(): bool
     {
         $payload = [
             'eid' => $this->eid,
@@ -220,7 +226,7 @@ class Episode
 
         $result = json_decode($this->curl('/callback/', $payload), true);
 
-        if (empty($result['ok'])) {
+        if (!isset($result['ok'])) {
             throw new CurlException(sprintf(
                 "unknown responce when mark episode as watched :: %s",
                 var_export($result, true)
@@ -250,12 +256,30 @@ class Episode
         return $res['server'];
     }
 
+    /**
+     * @param string $string
+     *
+     * @return string
+     * @todo normalize
+     *
+     */
     private function escapePath(string $string): string
     {
-        return addslashes(preg_replace('/[^A-Za-z0-9!? _\-]/', ' ', $string));
+        $replaced = preg_replace('/[^A-Za-z0-9!? _\-]/', ' ', $string);
+
+        if (is_null($replaced)) {
+            throw new \LogicException(sprintf("Can not escape string :: %s", $string));
+        }
+
+        return addslashes($replaced);
     }
 
-    private function getHash()
+    /**
+     * Return hash string for episode url
+     *
+     * @return string
+     */
+    private function getHash(): string
     {
         return md5(sprintf(
             "%s%s%s%s",
