@@ -102,9 +102,10 @@ class Episode
     {
         // @todo DOWNLOAD_DIR
         return sprintf(
-            "%s%s/Season %02d/%02d %s.mp4",
+            "%s%s/Season %02d/s%02de%02d %s.mp4",
             $_ENV['DOWNLOAD_DIR'],
             $this->escapePath($this->show),
+            $this->season,
             $this->season,
             $this->number,
             $this->escapePath($this->title)
@@ -114,14 +115,7 @@ class Episode
     public function getSeasonPath(): string
     {
         // @todo DOWNLOAD_DIR
-        return dirname(sprintf(
-            "%s%s/Season %02d/%02d %s.mp4",
-            $_ENV['DOWNLOAD_DIR'],
-            $this->escapePath($this->show),
-            $this->season,
-            $this->number,
-            $this->escapePath($this->title)
-        ));
+        return dirname($this->getEpisodePath());
     }
 
     /**

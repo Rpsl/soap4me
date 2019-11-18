@@ -73,7 +73,7 @@ class EpisodeTest extends TestCase
     public function testGetEpisodePath()
     {
         $this->assertEquals(
-            '/The Simpsons/Season 31/01 The Winter of Our Monetized Content.mp4',
+            '/The Simpsons/Season 31/s31e01 The Winter of Our Monetized Content.mp4',
             $this->episode->getEpisodePath()
         );
     }
