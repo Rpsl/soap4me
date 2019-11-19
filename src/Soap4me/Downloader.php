@@ -98,7 +98,7 @@ class Downloader
         $tmpQueue = [];
 
         foreach ($this->queue as $v) {
-            if (isset($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
+            if (!isset($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
                 $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
             } else {
                 /** @var Episode $existing */
