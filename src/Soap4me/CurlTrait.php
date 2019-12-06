@@ -63,7 +63,7 @@ trait CurlTrait
      */
     private function getHttpClient(): Client
     {
-        if (is_null($this->client)) {
+        if ($this->client === null) {
             $this->client = new Client([
                 'base_uri' => $this->baseUrl,
                 'timeout' => 5.0,
