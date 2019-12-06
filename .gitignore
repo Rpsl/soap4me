@@ -4,3 +4,4 @@ cookie.*
 .idea
 /vendor/
 .env
+.DS_Store
