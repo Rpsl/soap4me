@@ -2,50 +2,21 @@
 
 namespace Soap4me;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Soap4me\Exception\QualityException;
-use InterNations\Component\HttpMock\PHPUnit\HttpMockTrait;
 
 class EpisodeTest extends TestCase
 {
-    use HttpMockTrait;
-
     private $episode;
-
-    /**
-     * @param $object - instance in which protected value is being modified
-     * @param $property - property on instance being modified
-     * @param $value - new value of the property being modified
-     *
-     * @return void
-     * @throws \ReflectionException
-     * @todo move to bootstrap
-     *
-     * Sets a protected property on a given object via reflection
-     *
-     */
-    public function setProtectedProperty($object, $property, $value)
-    {
-        $reflection = new \ReflectionClass($object);
-        $reflection_property = $reflection->getProperty($property);
-        $reflection_property->setAccessible(true);
-        $reflection_property->setValue($object, $value);
-    }
-
-    public static function setUpBeforeClass(): void
-    {
-        static::setUpHttpMockBeforeClass('8082', 'localhost');
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        static::tearDownHttpMockAfterClass();
-    }
 
     protected function setUp(): void
     {
-        $this->setUpHttpMock();
-
         // @todo move to bootstrap
         $_ENV['DOWNLOAD_DIR'] = '/';
 
@@ -65,8 +36,6 @@ class EpisodeTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->tearDownHttpMock();
-
         $this->episode = null;
     }
 
@@ -155,33 +124,38 @@ class EpisodeTest extends TestCase
 
     public function testMarkAsWatched()
     {
-        $testHost = 'http://localhost:8082';
+        $container = [];
+        $history = Middleware::history($container);
 
-        // @todo move values to constant
-        $this->setProtectedProperty($this->episode, 'baseUrl', $testHost);
+        $mock = new MockHandler([
+            new Response(200, [], json_encode(['ok' => true])),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+
+        $client = new Client(['handler' => $handler]);
+
+        $this->episode->setHttpClient($client);
 
         $_ENV['COOKIE_FILE'] = 'test_cookie.json';
 
-        $this->http->mock
-            ->when()
-            ->methodIs('POST')
-            ->pathIs('/callback/')
-            ->then()
-            ->body(json_encode(['ok' => true]))
-            ->end();
-
-        $this->http->setUp();
-
         $this->assertTrue($this->episode->markAsWatched());
+
+        // Only one http request
+        $this->assertSame(1, count($container), );
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
 
         $this->assertSame(
             'POST',
-            $this->http->requests->latest()->getMethod()
+            $request->getMethod()
         );
 
         $this->assertSame(
-            $testHost . '/callback/',
-            $this->http->requests->latest()->getUrl()
+            '/callback/',
+            $request->getUri()->getPath()
         );
 
         $params = [
@@ -190,9 +164,11 @@ class EpisodeTest extends TestCase
             'what' => 'mark_watched'
         ];
 
+        parse_str($request->getBody()->getContents(), $post);
+
         $this->assertSame(
             $params,
-            $this->http->requests->latest()->getPostFields()->toArray()
+            $post
         );
     }
 
@@ -206,25 +182,33 @@ class EpisodeTest extends TestCase
 
     public function testGetUrl()
     {
-        $testHost = 'http://localhost:8082';
+        $container = [];
+        $history = Middleware::history($container);
 
-        $this->setProtectedProperty($this->episode, 'baseUrl', $testHost);
+        $mock = new MockHandler([
+            new Response(200, [], json_encode(['server' => '666'])),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+
+        $client = new Client(['handler' => $handler]);
+
+        $this->episode->setHttpClient($client);
 
         $_ENV['COOKIE_FILE'] = 'test_cookie.json';
 
-        $this->http->mock
-            ->when()
-            ->methodIs('POST')
-            ->pathIs('/callback/')
-            ->then()
-            ->body(json_encode(['server' => '666']))
-            ->end();
+        $url = $this->episode->getUrl();
 
-        $this->http->setUp();
+        // Only one http request
+        $this->assertSame(1, count($container), );
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
 
         $this->assertSame(
             'https://666.soap4.me/token-poken/12345/7e430f0deb1f56a6d6f140ae82659f1f/',
-            $this->episode->getUrl()
+            $url
         );
     }
 

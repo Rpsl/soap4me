@@ -13,6 +13,9 @@ trait CurlTrait
     /** @var string $baseUrl */
     protected $baseUrl = 'https://soap4.me';
 
+    /** @var Client */
+    protected $client;
+
     /**
      * @param string $url
      * @param array $data
@@ -23,10 +26,7 @@ trait CurlTrait
      */
     private function curl(string $url, array $data = [])
     {
-        $client = new Client([
-            'base_uri' => $this->baseUrl,
-            'timeout' => 5.0,
-        ]);
+        $client = $this->getHttpClient();
 
         $method = "GET";
 
@@ -56,6 +56,31 @@ trait CurlTrait
                 $url
             ));
         }
+    }
+
+    /**
+     * @return Client
+     */
+    private function getHttpClient(): Client
+    {
+        if ($this->client === null) {
+            $this->client = new Client([
+                'base_uri' => $this->baseUrl,
+                'timeout' => 5.0,
+            ]);
+        }
+
+        return $this->client;
+    }
+
+    /**
+     * Using in tests
+     *
+     * @param Client $client
+     */
+    public function setHttpClient(Client $client): void
+    {
+        $this->client = $client;
     }
 
     /**

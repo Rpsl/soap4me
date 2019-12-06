@@ -4,3 +4,4 @@ cookie*
 .idea
 .git
 vendor
+.DS_Store

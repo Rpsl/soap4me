@@ -22,10 +22,8 @@
         "ext-json": "*"
     },
     "require-dev": {
-        "kherge/box": "^2.7",
         "phpstan/phpstan": "^0.11.17",
         "phpstan/phpstan-strict-rules": "^0.11.1",
-        "phpunit/phpunit": "^8",
-        "internations/http-mock": "^0.12.1"
+        "phpunit/phpunit": "^8"
     }
 }
