@@ -1,6 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Soap4me;
+namespace Tests\Soap4me;
+
+use Soap4me\Episode;
+use Soap4me\Exception\QualityException;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -9,7 +12,6 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Soap4me\Exception\QualityException;
 
 class EpisodeTest extends TestCase
 {
