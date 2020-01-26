@@ -1,8 +1,6 @@
-# soap4.me downloader
+# Soap4.me downloader
 
 **Для работы необходим премиум аккаунт**
-
-Это форкнутый и переписанный, на скорую руку, скрипт [TurboLoader](https://github.com/Rpsl/turboload), который, как можно догадаться из названия, автоматически скачивает сериалы с сервиса [soap4.me](http://soap4.me)
 
 ## Зачем?
 
@@ -32,14 +30,25 @@ SOAP_PASSWORD=""
 NOTIFY_EMAIL="mail@me.com"
 
 MAILGUN_DOMAIN="domain.mailgun.org"
-MAILGUN_FROM="Turboloader <turboload@domain.mailgun.org>"
+MAILGUN_FROM="Soap4me downloader <soap4me@domain.mailgun.org>"
 MAILGUN_KEY=""
 ```
 
 
-### Docker
+# Docker
 
+Build image from sources
 ```bash
-docker build -t soap4me:latest .
-docker run --rm -it --name soap4me -v $(pwd)/downloads:/app/downloads/ -v $(pwd)/.env:/app/.env -v $(pwd)/cookie.json:/app/cookie.json soap4me:latest
+$ docker build -t soap4me:latest .
+```
+
+Pull image from github
+```bash
+docker pull docker.pkg.github.com/rpsl/soap4me/soap4me:latest
+```
+
+
+Run downloader (not daemon mode)
+```bash
+$ docker run --rm -it --name soap4me -v $(pwd)/downloads:/app/downloads/ -v $(pwd)/.env:/app/.env -v $(pwd)/cookie.json:/app/cookie.json soap4me:latest
 ```
