@@ -91,6 +91,18 @@ class Downloader
     }
 
     /**
+     * Return filterd queue
+     *
+     * @return Episode[]
+     */
+    public function getQueue()
+    {
+        $this->filter();
+
+        return $this->queue;
+    }
+
+    /**
      * Filter Queue. Leavel only best quality episodes
      */
     private function filter(): void
@@ -127,8 +139,10 @@ class Downloader
 
         // @todo look as shit, but we have only one episode after filtering
         foreach ($tmpQueue as $show) {
+            ksort($show);
             foreach ($show as $season) {
                 $season = array_reverse($season, true);
+                ksort($season);
                 foreach ($season as $episode) {
                     $this->add($episode);
                 }
