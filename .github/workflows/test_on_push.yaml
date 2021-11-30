@@ -23,3 +23,6 @@ jobs:
 
     - name: PHP version
       run: php --version
+
+    - name: PHPUnit Tests
+      run: vendor/bin/phpunit -c .
