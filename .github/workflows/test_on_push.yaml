@@ -3,10 +3,12 @@ name: CI
 on: [push]
 
 jobs:
-  inputs:
-    - php_version: 7.4 
   build-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - '7.4'
 
     steps:
     - uses: actions/checkout@v2
