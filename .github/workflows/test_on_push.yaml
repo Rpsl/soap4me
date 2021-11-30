@@ -1,12 +1,11 @@
 name: CI
 
-on: 
- push:
-  inputs:
-    - php-version: '7.4'
+on: [push]
 
 jobs:
   build-test:
+    inputs:
+      - php-version: '7.4'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
