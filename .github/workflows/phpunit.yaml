@@ -1,4 +1,4 @@
-name: CI
+name: "PHPUnit on Pull Requests"
 
 on:
   pull_request:
