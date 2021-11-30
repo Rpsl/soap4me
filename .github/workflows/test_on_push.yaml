@@ -3,11 +3,23 @@ name: CI
 on: [push]
 
 jobs:
-  build-test:
-    inputs:
-      - php-version: '7.4'
-    runs-on: ubuntu-latest
+  unit-tests-on-each-php-version:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        php-versions: ['7.2', '7.3', '7.4']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
-    - uses: php-actions/composer@v5
-    - uses: php-actions/phpunit@v3
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: pcntl
+
+    - name: Composer install
+      run: (rm composer.lock || true) &&  composer update
+
+    - name: PHP version
+      run: php --version
