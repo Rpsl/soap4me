@@ -27,5 +27,7 @@ jobs:
     - name: PHP version
       run: php --version
 
+    - uses: php-actions/phpstan@v2
+
     - name: PHPUnit Tests
       run: vendor/bin/phpunit -c .
