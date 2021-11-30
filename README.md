@@ -34,7 +34,6 @@ MAILGUN_FROM="Soap4me downloader <soap4me@domain.mailgun.org>"
 MAILGUN_KEY=""
 ```
 
-
 # Docker
 
 Build image from sources
@@ -42,11 +41,15 @@ Build image from sources
 $ docker build -t soap4me:latest .
 ```
 
-Pull image from github
+Pull image from [hub.docker.com](https://hub.docker.com/repository/docker/rpsl/soap4me)
 ```bash
-docker pull rpsl/soap4me:latest
+$ docker pull rpsl/soap4me:latest
 ```
 
+Run tests
+```bash
+$ docker run --rm -it --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpunit -c .'
+```
 
 Run downloader (not daemon mode)
 ```bash

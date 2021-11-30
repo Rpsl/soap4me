@@ -12,9 +12,11 @@ class Episode
 {
     use CurlTrait;
 
+    // @todo Enum
     public const QUALITY_FULL_HD = 'fullHD';
     public const QUALITY_HD = 'HD';
     public const QUALITY_SD = 'SD';
+    public const QUALITY_4K = '4k UHD';
 
     /**
      * Quality rank. Bigger is better
@@ -25,6 +27,7 @@ class Episode
         self::QUALITY_SD => 1,
         self::QUALITY_HD => 2,
         self::QUALITY_FULL_HD => 3,
+        self::QUALITY_4K => 4,
     ];
 
     /** @var string $show TV Show name */
@@ -48,7 +51,7 @@ class Episode
     /** @var string $hash of downloaded file */
     private $hash;
 
-    /** @var int $eid of dowloaded file */
+    /** @var int $eid of downloaded file */
     private $eid;
 
     /** @var int $sid of downloaded file */
@@ -228,7 +231,7 @@ class Episode
 
         if (!isset($result['ok'])) {
             throw new CurlException(sprintf(
-                "unknown responce when mark episode as watched :: %s",
+                "unknown response when mark episode as watched :: %s",
                 var_export($result, true)
             ));
         }
@@ -265,7 +268,9 @@ class Episode
      */
     private function escapePath(string $string): string
     {
-        $replaced = preg_replace('/[^A-Za-z0-9!? _\-]/', ' ', $string);
+        $replaced = preg_replace('/[^A-Za-z0-9! _\-]/', ' ', $string);
+
+        $replaced = trim($replaced);
 
         if (is_null($replaced)) {
             throw new \LogicException(sprintf("Can not escape string :: %s", $string));

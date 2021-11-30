@@ -24,7 +24,7 @@ class EpisodeTest extends TestCase
 
         $this->episode = new Episode(
             'The Simpsons',
-            'The Winter of Our Monetized Content',
+            'The Winter of Our Monetized Content?',
             31,
             1,
             'fullHD',
@@ -89,7 +89,7 @@ class EpisodeTest extends TestCase
     public function testGetTitle()
     {
         $this->assertEquals(
-            'The Winter of Our Monetized Content',
+            'The Winter of Our Monetized Content?',
             $this->episode->getTitle()
         );
     }
@@ -223,6 +223,7 @@ class EpisodeTest extends TestCase
                     'SD' => false,
                     'HD' => false,
                     'fullHD' => false,
+                    '4k UHD' => false,
                 ],
             ],
             [
@@ -231,6 +232,7 @@ class EpisodeTest extends TestCase
                     'SD' => true,
                     'HD' => false,
                     'fullHD' => false,
+                    '4k UHD' => false,
                 ],
             ],
             [
@@ -239,6 +241,16 @@ class EpisodeTest extends TestCase
                     'SD' => true,
                     'HD' => true,
                     'fullHD' => false,
+                    '4k UHD' => false,
+                ],
+            ],
+            [
+                'current' => '4k UHD',
+                'testing' => [
+                    'SD' => true,
+                    'HD' => true,
+                    'fullHD' => true,
+                    '4k UHD' => false,
                 ],
             ],
         ];
@@ -257,6 +269,10 @@ class EpisodeTest extends TestCase
             ],
             [
                 'quality' => 'SD',
+                'exception' => null,
+            ],
+            [
+                'quality' => '4k UHD',
                 'exception' => null,
             ],
             [
