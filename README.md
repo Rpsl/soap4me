@@ -48,7 +48,12 @@ $ docker pull rpsl/soap4me:latest
 
 Run tests
 ```bash
-$ docker run --rm -it --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpunit -c .'
+$ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpunit -c .'
+```
+
+Docker env
+```bash
+docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest 
 ```
 
 Run downloader (not daemon mode)
