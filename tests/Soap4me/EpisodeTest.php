@@ -24,7 +24,7 @@ class EpisodeTest extends TestCase
 
         $this->episode = new Episode(
             'The Simpsons',
-            'The Winter of Our Monetized Content',
+            'The Winter of Our Monetized Content?',
             31,
             1,
             'fullHD',
@@ -89,7 +89,7 @@ class EpisodeTest extends TestCase
     public function testGetTitle()
     {
         $this->assertEquals(
-            'The Winter of Our Monetized Content',
+            'The Winter of Our Monetized Content?',
             $this->episode->getTitle()
         );
     }
