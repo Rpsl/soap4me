@@ -203,7 +203,7 @@ class EpisodeTest extends TestCase
         $url = $this->episode->getUrl();
 
         // Only one http request
-        $this->assertSame(1, count($container), );
+        $this->assertSame(1, count($container) );
 
         /** @var Request $request */
         $request = $container[0]['request'];
