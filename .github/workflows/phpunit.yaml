@@ -28,6 +28,9 @@ jobs:
       run: php --version
 
     - uses: php-actions/phpstan@v2
+      with:
+        configuration: phpstan.neon
+        memory_limit: 256M
 
     - name: PHPUnit Tests
       run: vendor/bin/phpunit -c .
