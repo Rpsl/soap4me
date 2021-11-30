@@ -41,7 +41,7 @@ Build image from sources
 $ docker build -t soap4me:latest .
 ```
 
-Pull image from github
+Pull image from [hub.docker.com](https://hub.docker.com/repository/docker/rpsl/soap4me)
 ```bash
 $ docker pull rpsl/soap4me:latest
 ```
