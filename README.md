@@ -52,7 +52,7 @@ $ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me
 ```
 Run phpstan
 ```bash
-$ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpstan analyze --level max ./src'
+$ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpstan analyze --level max ./src ./tests'
 ```
 
 Docker env
