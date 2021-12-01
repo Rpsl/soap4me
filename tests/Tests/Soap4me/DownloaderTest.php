@@ -2,19 +2,19 @@
 
 namespace Tests\Soap4me;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Soap4me\Downloader;
 use Soap4me\DownloaderTransport\AbstractTransport;
 use Soap4me\Episode;
+use Soap4me\Exception\QualityException;
 
 class DownloaderTest extends TestCase
 {
-    /** @var Downloader */
-    private Downloader $downloader;
+    /** @var Downloader|null */
+    private ?Downloader $downloader;
 
-    protected function setUp(): void
+    final public function setUp(): void
     {
         /**
          * @var AbstractLogger $logger
@@ -35,12 +35,15 @@ class DownloaderTest extends TestCase
         $this->downloader->clearQueue();
     }
 
-    protected function tearDown(): void
+    final public function tearDown(): void
     {
         $this->downloader->clearQueue();
     }
 
-    public function testAdd(): void
+    /**
+     * @throws QualityException
+     */
+    final public function testAdd(): void
     {
         $episode = new Episode(
             'The Simpsons',
@@ -65,7 +68,10 @@ class DownloaderTest extends TestCase
         );
     }
 
-    public function testAddBatch(): void
+    /**
+     * @throws QualityException
+     */
+    final public function testAddBatch(): void
     {
         $episodes = [];
 
@@ -118,7 +124,10 @@ class DownloaderTest extends TestCase
         );
     }
 
-    public function testFilter_Sorting(): void
+    /**
+     * @throws QualityException
+     */
+    final public function testFilter_Sorting(): void
     {
         $episodes = [];
 
