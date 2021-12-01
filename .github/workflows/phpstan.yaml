@@ -28,4 +28,4 @@ jobs:
       run: php --version
 
     - name: PHPStan
-      run: vendor/bin/phpstan analyse -l max ./src ./tests
+      run: vendor/bin/phpstan analyse -l 7 ./src ./tests

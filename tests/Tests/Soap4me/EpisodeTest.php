@@ -98,7 +98,7 @@ class EpisodeTest extends TestCase
         $history = Middleware::history($container);
 
         $mock = new MockHandler([
-            new Response(200, [], json_encode(['ok' => true])),
+            new Response(200, [], (string) json_encode(['ok' => true])),
         ]);
 
         $handler = HandlerStack::create($mock);
@@ -158,7 +158,7 @@ class EpisodeTest extends TestCase
         $history = Middleware::history($container);
 
         $mock = new MockHandler([
-            new Response(200, [], json_encode(['server' => '666'])),
+            new Response(200, [], (string) json_encode(['server' => '666'])),
         ]);
 
         $handler = HandlerStack::create($mock);

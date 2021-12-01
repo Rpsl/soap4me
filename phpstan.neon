@@ -9,3 +9,4 @@ parameters:
         - '#Call to method (.*?) on an unknown class QueryTemplate[a-zA-Z]#'
         - '#Iterating over an object of an unknown class QueryTemplates[a-zA-Z]#'
         - '#(.*?)markup of static method phpQuery::newDocumentHTML(.*?)#'
+        - '#(.*?)of method PHPUnit\\Framework\\TestCase::expectException\(\) expects class-string<Throwable>(.*?)#'
