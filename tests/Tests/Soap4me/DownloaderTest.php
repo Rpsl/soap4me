@@ -2,6 +2,7 @@
 
 namespace Tests\Soap4me;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Soap4me\Downloader;
@@ -10,10 +11,8 @@ use Soap4me\Episode;
 
 class DownloaderTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|Downloader|Downloader */
-    private $downloader;
-
-    private $queue;
+    /** @var Downloader */
+    private Downloader $downloader;
 
     protected function setUp(): void
     {
@@ -33,15 +32,15 @@ class DownloaderTest extends TestCase
 
         $this->downloader = new Downloader($logger, $transport);
 
-        $this->queue = null;
+        $this->downloader->clearQueue();
     }
 
     protected function tearDown(): void
     {
-        $this->queue = null;
+        $this->downloader->clearQueue();
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $episode = new Episode(
             'The Simpsons',
@@ -60,13 +59,13 @@ class DownloaderTest extends TestCase
 
         $queue = $this->downloader->getQueue();
 
-        $this->assertSame(
+        TestCase::assertSame(
             1,
             count($queue)
         );
     }
 
-    public function testAddBatch()
+    public function testAddBatch(): void
     {
         $episodes = [];
 
@@ -113,13 +112,13 @@ class DownloaderTest extends TestCase
 
         $queue = $this->downloader->getQueue();
 
-        $this->assertSame(
+        TestCase::assertSame(
             3,
             count($queue)
         );
     }
 
-    public function testFilter_Sorting()
+    public function testFilter_Sorting(): void
     {
         $episodes = [];
 
@@ -182,7 +181,7 @@ class DownloaderTest extends TestCase
         $var = 1;
 
         foreach ($queue as $ep) {
-            $this->assertSame($var, $ep->getNumber());
+            TestCase::assertSame($var, $ep->getNumber());
             $var++;
         }
     }

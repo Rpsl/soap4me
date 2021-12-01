@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 
 class EpisodeTest extends TestCase
 {
-    private $episode;
+    private Episode $episode;
 
-    protected function setUp(): void
+    final protected function setUp(): void
     {
         // @todo move to bootstrap
         $_ENV['DOWNLOAD_DIR'] = '/';
@@ -38,12 +38,12 @@ class EpisodeTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->episode = null;
+        unset($this->episode);
     }
 
     public function testGetEpisodePath()
     {
-        $this->assertEquals(
+        TestCase::assertEquals(
             '/The Simpsons/Season 31/s31e01 The Winter of Our Monetized Content.mp4',
             $this->episode->getEpisodePath()
         );
@@ -51,7 +51,7 @@ class EpisodeTest extends TestCase
 
     public function testGetSeasonPath()
     {
-        $this->assertEquals(
+        TestCase::assertEquals(
             '/The Simpsons/Season 31',
             $this->episode->getSeasonPath()
         );
@@ -66,7 +66,7 @@ class EpisodeTest extends TestCase
             $this->episode->setQuality($current);
 
             foreach ($expectedResults as $testing => $expected) {
-                $this->assertEquals(
+                TestCase::assertEquals(
                     $expected,
                     $this->episode->isBetterQualityThen($testing),
                     sprintf('Failed check to better quality. Episode with quality "%s" testing with "%s"', $current,
@@ -74,13 +74,13 @@ class EpisodeTest extends TestCase
                 );
             }
         } catch (\Exception $e) {
-            $this->fail(sprintf('unexpected exception "%s"', $e->getMessage()));
+            TestCase::fail(sprintf('unexpected exception "%s"', $e->getMessage()));
         }
     }
 
     public function testGetShow()
     {
-        $this->assertEquals(
+        TestCase::assertEquals(
             'The Simpsons',
             $this->episode->getShow()
         );
@@ -88,7 +88,7 @@ class EpisodeTest extends TestCase
 
     public function testGetTitle()
     {
-        $this->assertEquals(
+        TestCase::assertEquals(
             'The Winter of Our Monetized Content?',
             $this->episode->getTitle()
         );
@@ -96,7 +96,7 @@ class EpisodeTest extends TestCase
 
     public function testGetQuality()
     {
-        $this->assertEquals(
+        TestCase::assertEquals(
             'fullHD',
             $this->episode->getQuality()
         );
@@ -107,18 +107,18 @@ class EpisodeTest extends TestCase
      */
     public function testSetQuality(string $quality, ?string $exception)
     {
-        if ($exception) {
-            $this->expectException($exception);
+        if (!is_null($exception)) {
+            TestCase::expectException($exception);
         }
 
         $this->episode->setQuality($quality);
-        $this->assertTrue(true);
+        TestCase::assertTrue(true);
 
     }
 
     public function testGetNumber()
     {
-        $this->assertSame(
+        TestCase::assertSame(
             1,
             $this->episode->getNumber()
         );
@@ -142,20 +142,20 @@ class EpisodeTest extends TestCase
 
         $_ENV['COOKIE_FILE'] = 'test_cookie.json';
 
-        $this->assertTrue($this->episode->markAsWatched());
+        TestCase::assertTrue($this->episode->markAsWatched());
 
         // Only one http request
-        $this->assertSame(1, count($container));
+        TestCase::assertSame(1, count($container));
 
         /** @var Request $request */
         $request = $container[0]['request'];
 
-        $this->assertSame(
+        TestCase::assertSame(
             'POST',
             $request->getMethod()
         );
 
-        $this->assertSame(
+        TestCase::assertSame(
             '/callback/',
             $request->getUri()->getPath()
         );
@@ -163,12 +163,12 @@ class EpisodeTest extends TestCase
         $params = [
             'eid' => '12345',
             'token' => 'token-poken',
-            'what' => 'mark_watched'
+            'what' => 'mark_watched',
         ];
 
         parse_str($request->getBody()->getContents(), $post);
 
-        $this->assertSame(
+        TestCase::assertSame(
             $params,
             $post
         );
@@ -176,7 +176,7 @@ class EpisodeTest extends TestCase
 
     public function testGetSeason()
     {
-        $this->assertSame(
+        TestCase::assertSame(
             31,
             $this->episode->getSeason()
         );
@@ -203,12 +203,12 @@ class EpisodeTest extends TestCase
         $url = $this->episode->getUrl();
 
         // Only one http request
-        $this->assertSame(1, count($container) );
+        TestCase::assertSame(1, count($container));
 
         /** @var Request $request */
         $request = $container[0]['request'];
 
-        $this->assertSame(
+        TestCase::assertSame(
             'https://666.soap4.me/token-poken/12345/7e430f0deb1f56a6d6f140ae82659f1f/',
             $url
         );

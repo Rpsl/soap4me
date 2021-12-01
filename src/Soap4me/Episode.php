@@ -215,6 +215,14 @@ class Episode
     }
 
     /**
+     * @return string
+     */
+    public function getTranslate():string
+    {
+        return $this->translate;
+    }
+
+    /**
      * @return bool
      *
      * @throws CurlException

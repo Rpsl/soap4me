@@ -103,6 +103,14 @@ class Downloader
     }
 
     /**
+     * Clear queue
+     */
+    public function clearQueue(): void
+    {
+        $this->queue = [];
+    }
+
+    /**
      * Filter Queue. Leavel only best quality episodes
      */
     private function filter(): void
