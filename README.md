@@ -50,10 +50,14 @@ Run tests
 ```bash
 $ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpunit -c .'
 ```
+Run phpstan
+```bash
+$ docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest -c 'composer update && composer install --prefer-dist --no-progress && ./vendor/bin/phpstan analyze --level max ./src'
+```
 
 Docker env
 ```bash
-docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest 
+docker run --rm -it -v $(pwd):/app/ --name soap4me --entrypoint 'bash' soap4me:latest
 ```
 
 Run downloader (not daemon mode)

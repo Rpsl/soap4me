@@ -270,13 +270,11 @@ class Episode
     {
         $replaced = preg_replace('/[^A-Za-z0-9! _\-]/', ' ', $string);
 
-        $replaced = trim($replaced);
-
         if (is_null($replaced)) {
             throw new \LogicException(sprintf("Can not escape string :: %s", $string));
         }
 
-        return addslashes($replaced);
+        return addslashes(trim($replaced));
     }
 
     /**
