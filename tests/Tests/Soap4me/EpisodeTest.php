@@ -3,7 +3,10 @@
 namespace Tests\Soap4me;
 
 use Soap4me\Episode;
+use Soap4me\Exception\CurlException;
 use Soap4me\Exception\QualityException;
+
+use Exception;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
@@ -17,11 +20,11 @@ class EpisodeTest extends TestCase
 {
     private Episode $episode;
 
-    final protected function setUp(): void
+    /**
+     * @throws QualityException
+     */
+    final public function setUp(): void
     {
-        // @todo move to bootstrap
-        $_ENV['DOWNLOAD_DIR'] = '/';
-
         $this->episode = new Episode(
             'The Simpsons',
             'The Winter of Our Monetized Content?',
@@ -36,12 +39,12 @@ class EpisodeTest extends TestCase
         );
     }
 
-    protected function tearDown(): void
+    final public function tearDown(): void
     {
         unset($this->episode);
     }
 
-    public function testGetEpisodePath()
+    final public function testGetEpisodePath(): void
     {
         TestCase::assertEquals(
             '/The Simpsons/Season 31/s31e01 The Winter of Our Monetized Content.mp4',
@@ -49,7 +52,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testGetSeasonPath()
+    final public function testGetSeasonPath(): void
     {
         TestCase::assertEquals(
             '/The Simpsons/Season 31',
@@ -57,28 +60,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider isBetterQualityThenProvider
-     */
-    public function testIsBetterQualityThen(string $current, array $expectedResults)
-    {
-        try {
-            $this->episode->setQuality($current);
-
-            foreach ($expectedResults as $testing => $expected) {
-                TestCase::assertEquals(
-                    $expected,
-                    $this->episode->isBetterQualityThen($testing),
-                    sprintf('Failed check to better quality. Episode with quality "%s" testing with "%s"', $current,
-                        $testing)
-                );
-            }
-        } catch (\Exception $e) {
-            TestCase::fail(sprintf('unexpected exception "%s"', $e->getMessage()));
-        }
-    }
-
-    public function testGetShow()
+    final public function testGetShow(): void
     {
         TestCase::assertEquals(
             'The Simpsons',
@@ -86,7 +68,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testGetTitle()
+    final public function testGetTitle(): void
     {
         TestCase::assertEquals(
             'The Winter of Our Monetized Content?',
@@ -94,7 +76,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testGetQuality()
+    final public function testGetQuality(): void
     {
         TestCase::assertEquals(
             'fullHD',
@@ -102,21 +84,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider setQualityDataProvider
-     */
-    public function testSetQuality(string $quality, ?string $exception)
-    {
-        if (!is_null($exception)) {
-            TestCase::expectException($exception);
-        }
-
-        $this->episode->setQuality($quality);
-        TestCase::assertTrue(true);
-
-    }
-
-    public function testGetNumber()
+    final public function testGetNumber(): void
     {
         TestCase::assertSame(
             1,
@@ -124,7 +92,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testMarkAsWatched()
+    final public function testMarkAsWatched(): void
     {
         $container = [];
         $history = Middleware::history($container);
@@ -140,9 +108,11 @@ class EpisodeTest extends TestCase
 
         $this->episode->setHttpClient($client);
 
-        $_ENV['COOKIE_FILE'] = 'test_cookie.json';
-
-        TestCase::assertTrue($this->episode->markAsWatched());
+        try {
+            TestCase::assertTrue($this->episode->markAsWatched());
+        } catch (CurlException $e) {
+            TestCase::fail();
+        }
 
         // Only one http request
         TestCase::assertSame(1, count($container));
@@ -174,7 +144,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testGetSeason()
+    final public function testGetSeason(): void
     {
         TestCase::assertSame(
             31,
@@ -182,7 +152,7 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function testGetUrl()
+    final public function testGetUrl(): void
     {
         $container = [];
         $history = Middleware::history($container);
@@ -198,15 +168,14 @@ class EpisodeTest extends TestCase
 
         $this->episode->setHttpClient($client);
 
-        $_ENV['COOKIE_FILE'] = 'test_cookie.json';
-
-        $url = $this->episode->getUrl();
+        try {
+            $url = $this->episode->getUrl();
+        } catch (CurlException $e) {
+            TestCase::fail();
+        }
 
         // Only one http request
         TestCase::assertSame(1, count($container));
-
-        /** @var Request $request */
-        $request = $container[0]['request'];
 
         TestCase::assertSame(
             'https://666.soap4.me/token-poken/12345/7e430f0deb1f56a6d6f140ae82659f1f/',
@@ -214,7 +183,42 @@ class EpisodeTest extends TestCase
         );
     }
 
-    public function isBetterQualityThenProvider()
+    /**
+     * @dataProvider isBetterQualityThenProvider
+     */
+    final public function testIsBetterQualityThen(string $current, array $expectedResults): void
+    {
+        try {
+            $this->episode->setQuality($current);
+
+            foreach ($expectedResults as $testing => $expected) {
+                TestCase::assertEquals(
+                    $expected,
+                    $this->episode->isBetterQualityThen($testing),
+                    sprintf('Failed check to better quality. Episode with quality "%s" testing with "%s"', $current,
+                        $testing)
+                );
+            }
+        } catch (Exception $e) {
+            TestCase::fail(sprintf('unexpected exception "%s"', $e->getMessage()));
+        }
+    }
+
+    /**
+     * @dataProvider setQualityDataProvider
+     * @throws QualityException
+     */
+    final public function testSetQuality(string $quality, ?string $exception): void
+    {
+        if (!is_null($exception)) {
+            TestCase::expectException($exception);
+        }
+
+        $this->episode->setQuality($quality);
+        TestCase::assertTrue(true);
+    }
+
+    final public function isBetterQualityThenProvider(): array
     {
         return [
             [
@@ -256,7 +260,7 @@ class EpisodeTest extends TestCase
         ];
     }
 
-    public function setQualityDataProvider()
+    final public function setQualityDataProvider(): array
     {
         return [
             [
