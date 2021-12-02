@@ -1,4 +1,4 @@
-name: "PHPUnit on Pull Requests"
+name: "PHPStan on Pull Requests"
 
 on:
   pull_request:
@@ -27,5 +27,5 @@ jobs:
     - name: PHP version
       run: php --version
 
-    - name: PHPUnit Tests
-      run: vendor/bin/phpunit -c .
+    - name: PHPStan
+      run: vendor/bin/phpstan analyse -l 7 ./src ./tests

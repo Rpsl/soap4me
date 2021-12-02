@@ -21,6 +21,6 @@ abstract class AbstractNotify
 
     public function notify(Episode $episode): bool
     {
-
+        return false;
     }
 }

@@ -46,7 +46,7 @@ class Downloader
      */
     public function addBatch($episodes = [])
     {
-        array_map(function ($v) {
+        array_map(function ($v): void {
             $this->add($v);
         }, $episodes);
 
@@ -74,7 +74,7 @@ class Downloader
     {
         $this->filter();
 
-        array_walk($this->queue, function ($v) {
+        array_walk($this->queue, function ($v): void {
             /** @var Episode $v */
             $this->transport->download($v);
 
@@ -100,6 +100,14 @@ class Downloader
         $this->filter();
 
         return $this->queue;
+    }
+
+    /**
+     * Clear queue
+     */
+    public function clearQueue(): void
+    {
+        $this->queue = [];
     }
 
     /**

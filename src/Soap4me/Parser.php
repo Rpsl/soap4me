@@ -92,11 +92,11 @@ class Parser
             if ((bool)preg_match('~(вход на сайт)~usi', $result)) {
                 return true;
             }
-
-            return false;
         } catch (CurlException $e) {
             $this->logger->error(sprintf('Check login is error :: %s :: %s', $e->getMessage(), $result));
         }
+        
+        return false;
     }
 
     /**

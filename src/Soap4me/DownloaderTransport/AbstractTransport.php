@@ -22,6 +22,6 @@ abstract class AbstractTransport
 
     public function download(Episode $episode): bool
     {
-
+        return false;
     }
 }

@@ -27,4 +27,8 @@
             <directory suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="COOKIE_FILE" value="test_cookie.json" force="true" />
+        <env name="DOWNLOAD_DIR" value="/" force="true" />
+    </php>
 </phpunit>

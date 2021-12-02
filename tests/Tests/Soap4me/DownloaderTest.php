@@ -7,15 +7,14 @@ use Psr\Log\AbstractLogger;
 use Soap4me\Downloader;
 use Soap4me\DownloaderTransport\AbstractTransport;
 use Soap4me\Episode;
+use Soap4me\Exception\QualityException;
 
 class DownloaderTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|Downloader|Downloader */
-    private $downloader;
+    /** @var Downloader|null */
+    private ?Downloader $downloader;
 
-    private $queue;
-
-    protected function setUp(): void
+    public function setUp(): void
     {
         /**
          * @var AbstractLogger $logger
@@ -33,15 +32,18 @@ class DownloaderTest extends TestCase
 
         $this->downloader = new Downloader($logger, $transport);
 
-        $this->queue = null;
+        $this->downloader->clearQueue();
     }
 
-    protected function tearDown(): void
+    public function tearDown(): void
     {
-        $this->queue = null;
+        $this->downloader->clearQueue();
     }
 
-    public function testAdd()
+    /**
+     * @throws QualityException
+     */
+    public function testAdd(): void
     {
         $episode = new Episode(
             'The Simpsons',
@@ -60,13 +62,16 @@ class DownloaderTest extends TestCase
 
         $queue = $this->downloader->getQueue();
 
-        $this->assertSame(
+        TestCase::assertSame(
             1,
             count($queue)
         );
     }
 
-    public function testAddBatch()
+    /**
+     * @throws QualityException
+     */
+    public function testAddBatch(): void
     {
         $episodes = [];
 
@@ -113,13 +118,16 @@ class DownloaderTest extends TestCase
 
         $queue = $this->downloader->getQueue();
 
-        $this->assertSame(
+        TestCase::assertSame(
             3,
             count($queue)
         );
     }
 
-    public function testFilter_Sorting()
+    /**
+     * @throws QualityException
+     */
+    public function testFilter_Sorting(): void
     {
         $episodes = [];
 
@@ -182,7 +190,7 @@ class DownloaderTest extends TestCase
         $var = 1;
 
         foreach ($queue as $ep) {
-            $this->assertSame($var, $ep->getNumber());
+            TestCase::assertSame($var, $ep->getNumber());
             $var++;
         }
     }
