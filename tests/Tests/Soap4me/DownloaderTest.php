@@ -14,7 +14,7 @@ class DownloaderTest extends TestCase
     /** @var Downloader|null */
     private ?Downloader $downloader;
 
-    final public function setUp(): void
+    public function setUp(): void
     {
         /**
          * @var AbstractLogger $logger
@@ -35,7 +35,7 @@ class DownloaderTest extends TestCase
         $this->downloader->clearQueue();
     }
 
-    final public function tearDown(): void
+    public function tearDown(): void
     {
         $this->downloader->clearQueue();
     }
@@ -43,7 +43,7 @@ class DownloaderTest extends TestCase
     /**
      * @throws QualityException
      */
-    final public function testAdd(): void
+    public function testAdd(): void
     {
         $episode = new Episode(
             'The Simpsons',
@@ -71,7 +71,7 @@ class DownloaderTest extends TestCase
     /**
      * @throws QualityException
      */
-    final public function testAddBatch(): void
+    public function testAddBatch(): void
     {
         $episodes = [];
 
@@ -127,7 +127,7 @@ class DownloaderTest extends TestCase
     /**
      * @throws QualityException
      */
-    final public function testFilter_Sorting(): void
+    public function testFilter_Sorting(): void
     {
         $episodes = [];
 
