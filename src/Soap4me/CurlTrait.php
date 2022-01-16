@@ -11,7 +11,7 @@ use Soap4me\Exception\CurlException;
 trait CurlTrait
 {
     /** @var string $baseUrl */
-    protected $baseUrl = 'https://soap4.me';
+    protected $baseUrl = 'https://soap4youand.me';
 
     /** @var Client */
     protected $client;
@@ -93,7 +93,7 @@ trait CurlTrait
         $payload = [
             'cookies' => $this->getCookies(),
             'headers' => [
-                'Referer' => 'https://soap4.me/',
+                'Referer' => 'https://soap4youand.me/',
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
             ],
             'allow_redirects' => true,

@@ -178,7 +178,7 @@ class EpisodeTest extends TestCase
         TestCase::assertSame(1, count($container));
 
         TestCase::assertSame(
-            'https://666.soap4.me/token-poken/12345/7e430f0deb1f56a6d6f140ae82659f1f/',
+            'https://666.soap4youand.me/token-poken/12345/7e430f0deb1f56a6d6f140ae82659f1f/',
             $url
         );
     }
