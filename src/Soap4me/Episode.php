@@ -174,7 +174,7 @@ class Episode
     public function getUrl(): string
     {
         return sprintf(
-            'https://%s.soap4.me/%s/%s/%s/',
+            'https://%s.soap4youand.me/%s/%s/%s/',
             $this->getServerId(),
             $this->token,
             $this->eid,
