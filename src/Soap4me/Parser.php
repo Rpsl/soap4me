@@ -16,13 +16,13 @@ class Parser
     use CurlTrait;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var string */
-    private $login;
+    private string $login;
 
     /** @var string */
-    private $password;
+    private string $password;
 
     public function __construct(LoggerInterface $logger, string $login, string $password)
     {
@@ -40,7 +40,7 @@ class Parser
      *
      * @return Episode[]
      */
-    public function findUnwatched()
+    public function findUnwatched(): array
     {
         try {
             $html = $this->curl('/new/my/unwatched/');
@@ -49,7 +49,7 @@ class Parser
             return [];
         }
 
-        $res = phpQuery::newDocumentHTML($html, $charset = 'utf-8');
+        $res = phpQuery::newDocumentHTML($html, 'utf-8');
 
         $token = trim($res->find('#token')->attr('data:token'));
 
@@ -59,12 +59,14 @@ class Parser
 
         foreach ($episodes as $ep) {
             try {
+                $quality = Quality::NewQuality(trim(pq($ep)->find('.quality')->text()));
+
                 $unwatched[] = new Episode(
                     trim(pq($ep)->find('.soap')->text()),
                     trim(pq($ep)->find('.en')->text()),
                     (int)trim(pq($ep)->find('.play')->attr('data:season')),
                     $this->parseEpisodeNumber(trim(pq($ep)->find('.nums')->text())),
-                    trim(pq($ep)->find('.quality')->text()),
+                    $quality,
                     trim(pq($ep)->find('.translate')->text()),
                     trim(pq($ep)->find('.play')->attr('data:hash')),
                     (int)trim(pq($ep)->find('.play')->attr('data:eid')),
@@ -95,7 +97,7 @@ class Parser
         } catch (CurlException $e) {
             $this->logger->error(sprintf('Check login is error :: %s :: %s', $e->getMessage(), $result));
         }
-        
+
         return false;
     }
 
@@ -105,7 +107,7 @@ class Parser
     private function login(): bool
     {
         try {
-            $res = $this->curl('/login/', [
+            $this->curl('/login/', [
                 'login' => $this->login,
                 'password' => $this->password,
             ]);

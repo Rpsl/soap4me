@@ -8,11 +8,12 @@ use Soap4me\Downloader;
 use Soap4me\DownloaderTransport\AbstractTransport;
 use Soap4me\Episode;
 use Soap4me\Exception\QualityException;
+use Soap4me\Quality;
 
 class DownloaderTest extends TestCase
 {
-    /** @var Downloader|null */
-    private ?Downloader $downloader;
+    /** @var Downloader */
+    private Downloader $downloader;
 
     public function setUp(): void
     {
@@ -50,7 +51,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             1,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -80,7 +81,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             1,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -93,7 +94,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             2,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -106,7 +107,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             3,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -136,7 +137,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             4,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -149,7 +150,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             2,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -162,7 +163,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             3,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -175,7 +176,7 @@ class DownloaderTest extends TestCase
             'The Winter of Our Monetized Content',
             31,
             1,
-            'fullHD',
+            Quality::NewQuality('fullHD'),
             'ru',
             'some-hash-string',
             12345,
@@ -192,6 +193,75 @@ class DownloaderTest extends TestCase
         foreach ($queue as $ep) {
             TestCase::assertSame($var, $ep->getNumber());
             $var++;
+        }
+    }
+
+    /**
+     * @throws QualityException
+     */
+    public function testFilter_Sorting_MaxQuality(): void
+    {
+        $episodes = [];
+
+        $episodes[] = new Episode(
+            'The Simpsons',
+            'The Winter of Our Monetized Content',
+            31,
+            4,
+            Quality::NewQuality('4k UHD'),
+            'ru',
+            'some-hash-string',
+            12345,
+            6789,
+            'token-poken'
+        );
+
+        $episodes[] = new Episode(
+            'The Simpsons',
+            'The Winter of Our Monetized Content',
+            31,
+            2,
+            Quality::NewQuality('fullHD'),
+            'ru',
+            'some-hash-string',
+            12345,
+            6789,
+            'token-poken'
+        );
+
+        $episodes[] = new Episode(
+            'The Simpsons',
+            'The Winter of Our Monetized Content',
+            31,
+            3,
+            Quality::NewQuality('fullHD'),
+            'ru',
+            'some-hash-string',
+            12345,
+            6789,
+            'token-poken'
+        );
+
+        $episodes[] = new Episode(
+            'The Simpsons',
+            'The Winter of Our Monetized Content',
+            31,
+            1,
+            Quality::NewQuality('fullHD'),
+            'ru',
+            'some-hash-string',
+            12345,
+            6789,
+            'token-poken'
+        );
+
+        $this->downloader->setMaxQuality('fullHD');
+        $this->downloader->addBatch($episodes);
+
+        $queue = $this->downloader->getQueue();
+
+        foreach ($queue as $ep) {
+            TestCase::assertSame('fullHD', $ep->getQuality()->getQualityName());
         }
     }
 }

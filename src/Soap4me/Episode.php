@@ -2,8 +2,8 @@
 
 namespace Soap4me;
 
+use LogicException;
 use Soap4me\Exception\CurlException;
-use Soap4me\Exception\QualityException;
 
 /**
  * @property-read string $baseUrl
@@ -12,53 +12,35 @@ class Episode
 {
     use CurlTrait;
 
-    // @todo Enum
-    public const QUALITY_FULL_HD = 'fullHD';
-    public const QUALITY_HD = 'HD';
-    public const QUALITY_SD = 'SD';
-    public const QUALITY_4K = '4k UHD';
-
-    /**
-     * Quality rank. Bigger is better
-     *
-     * @var array
-     */
-    private static $QUALITY_RANK = [
-        self::QUALITY_SD => 1,
-        self::QUALITY_HD => 2,
-        self::QUALITY_FULL_HD => 3,
-        self::QUALITY_4K => 4,
-    ];
-
     /** @var string $show TV Show name */
-    private $show;
+    private string $show;
 
     /** @var string $title TV Show episode title */
-    private $title;
+    private string $title;
 
     /** @var int $season TV Show season number */
-    private $season;
+    private int $season;
 
     /** @var int $number TV Show episode number */
-    private $number;
+    private int $number;
 
-    /** @var string $quality TV Show episode quality */
-    private $quality;
+    /** @var Quality $quality TV Show episode quality */
+    private Quality $quality;
 
     /** @var string $translate TV Show sound translate */
-    private $translate;
+    private string $translate;
 
     /** @var string $hash of downloaded file */
-    private $hash;
+    private string $hash;
 
     /** @var int $eid of downloaded file */
-    private $eid;
+    private int $eid;
 
     /** @var int $sid of downloaded file */
-    private $sid;
+    private int $sid;
 
     /** @var string $token for video player */
-    private $token;
+    private string $token;
 
     /**
      * Episode constructor.
@@ -67,21 +49,19 @@ class Episode
      * @param string $title
      * @param int $season
      * @param int $number
-     * @param string $quality
+     * @param Quality $quality
      * @param string $translate
      * @param string $hash
      * @param int $eid
      * @param int $sid
      * @param string $token
-     *
-     * @throws QualityException
      */
     public function __construct(
         string $show,
         string $title,
         int $season,
         int $number,
-        string $quality,
+        Quality $quality,
         string $translate,
         string $hash,
         int $eid,
@@ -92,20 +72,20 @@ class Episode
         $this->title = $title;
         $this->season = $season;
         $this->number = $number;
+        $this->quality = $quality;
         $this->translate = $translate;
         $this->hash = $hash;
         $this->eid = $eid;
         $this->sid = $sid;
         $this->token = $token;
 
-        $this->setQuality($quality);
     }
 
     public function getEpisodePath(): string
     {
         // @todo DOWNLOAD_DIR
         return sprintf(
-            "%s%s/Season %02d/s%02de%02d %s.mp4",
+            '%s%s/Season %02d/s%02de%02d %s.mp4',
             $_ENV['DOWNLOAD_DIR'],
             $this->escapePath($this->show),
             $this->season,
@@ -122,49 +102,16 @@ class Episode
     }
 
     /**
-     * Set and verify quality of episode
-     *
-     * @param string $quality
-     *
-     * @return void
-     *
-     * @throws QualityException
-     */
-    public function setQuality(string $quality): void
-    {
-        if (isset(self::$QUALITY_RANK[$quality])) {
-            $this->quality = $quality;
-            return;
-        }
-
-        throw new QualityException(sprintf("Unknown quality type :: %s", $this->quality));
-    }
-
-    /**
      * Return Quality type of episode
      *
-     * @return string
+     * @return Quality
      */
-    public function getQuality(): string
+    public function getQuality(): Quality
     {
         return $this->quality;
     }
 
-    /**
-     * Compare quality of this episode with another
-     *
-     * @param string $quality
-     *
-     * @return bool
-     */
-    public function isBetterQualityThen(string $quality): bool
-    {
-        if (self::$QUALITY_RANK[$this->getQuality()] > self::$QUALITY_RANK[$quality]) {
-            return true;
-        }
-
-        return false;
-    }
+    
 
     /**
      * @return string
@@ -237,9 +184,9 @@ class Episode
 
         $result = json_decode($this->curl('/callback/', $payload), true);
 
-        if (!isset($result['ok'])) {
+        if (!is_array($result) && !isset($result['ok'])) {
             throw new CurlException(sprintf(
-                "unknown response when mark episode as watched :: %s",
+                'unknown response when mark episode as watched :: %s',
                 var_export($result, true)
             ));
         }
@@ -279,7 +226,7 @@ class Episode
         $replaced = preg_replace('/[^A-Za-z0-9! _\-]/', ' ', $string);
 
         if (is_null($replaced)) {
-            throw new \LogicException(sprintf("Can not escape string :: %s", $string));
+            throw new LogicException(sprintf('Can not escape string :: %s', $string));
         }
 
         return addslashes(trim($replaced));
@@ -293,7 +240,7 @@ class Episode
     private function getHash(): string
     {
         return md5(sprintf(
-            "%s%s%s%s",
+            '%s%s%s%s',
             $this->token,
             $this->eid,
             $this->sid,
