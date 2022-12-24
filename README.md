@@ -27,6 +27,9 @@ LOG_FILE="downloads/downloads.log"
 SOAP_LOGIN=""
 SOAP_PASSWORD=""
 
+# SD, HD, fullHD, 4k UHD
+MAX_QUALITY="fullHD"
+
 NOTIFY_EMAIL="mail@me.com"
 
 MAILGUN_DOMAIN="domain.mailgun.org"

@@ -5,21 +5,23 @@ namespace Soap4me;
 use Psr\Log\LoggerInterface;
 use Soap4me\DownloaderTransport\AbstractTransport;
 use Soap4me\Exception\CurlException;
+use Soap4me\Exception\QualityException;
 use Soap4me\Notify\AbstractNotify;
 
 class Downloader
 {
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var AbstractTransport */
-    private $transport;
+    private AbstractTransport $transport;
 
     /** @var Episode[] */
-    private $queue = [];
+    private array $queue = [];
 
     /** @var AbstractNotify|null */
-    private $notify;
+    private ?AbstractNotify $notify;
+    private ?Quality $max_quality = null;
 
     public function __construct(LoggerInterface $logger, AbstractTransport $transport)
     {
@@ -32,9 +34,23 @@ class Downloader
      *
      * @return $this
      */
-    public function setNotify(AbstractNotify $notify)
+    public function setNotify(AbstractNotify $notify): Downloader
     {
         $this->notify = $notify;
+
+        return $this;
+    }
+
+    public function setMaxQuality(string $max_quality): Downloader
+    {
+        try {
+            $this->max_quality = Quality::NewQuality($max_quality);
+        } catch (QualityException $e) {
+            $this->max_quality = null;
+            $this->logger->error(
+                sprintf('Incorrect value of MAX_QUALITY variable "%s" it will be ignore', $max_quality)
+            );
+        }
 
         return $this;
     }
@@ -44,7 +60,7 @@ class Downloader
      *
      * @return Downloader
      */
-    public function addBatch($episodes = [])
+    public function addBatch(array $episodes = []): Downloader
     {
         array_map(function ($v): void {
             $this->add($v);
@@ -59,11 +75,11 @@ class Downloader
     public function add(Episode $episode): void
     {
         $this->logger->info(sprintf(
-            "Add episode %s - S%02dE%02d (%s) %s",
+            'Add episode %s - S%02dE%02d (%s) %s',
             $episode->getShow(),
             $episode->getSeason(),
             $episode->getNumber(),
-            $episode->getQuality(),
+            $episode->getQuality()->getQualityName(),
             $episode->getTitle()
         ));
 
@@ -111,36 +127,42 @@ class Downloader
     }
 
     /**
-     * Filter Queue. Leavel only best quality episodes
+     * Filter Queue. Leave only best quality episodes
      */
     private function filter(): void
     {
         $tmpQueue = [];
 
         foreach ($this->queue as $v) {
-            if (!isset($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
-                $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
-            } else {
-                /** @var Episode $existing */
-                $existing = $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()];
-
-                if ($existing->isBetterQualityThen($v->getQuality())) {
+            if (!is_null($this->max_quality)) {
+                if ($v->getQuality()->isBetterQualityThen($this->max_quality)) {
                     continue;
                 }
-
-                $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
-
-                $this->logger->debug(sprintf(
-                    "Episode %s - S%02dE%02d %s with quality %s replaced by quality %s",
-                    $v->getShow(),
-                    $v->getSeason(),
-                    $v->getNumber(),
-                    $v->getTitle(),
-                    $existing->getQuality(),
-                    $v->getQuality()
-                ));
             }
 
+            if (!isset($tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()])) {
+                $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
+                continue;
+            }
+
+            /** @var Episode $existing */
+            $existing = $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()];
+
+            if ($existing->getQuality()->isBetterQualityThen($v->getQuality())) {
+                continue;
+            }
+
+            $tmpQueue[$v->getShow()][$v->getSeason()][$v->getNumber()] = $v;
+
+            $this->logger->debug(sprintf(
+                'Episode %s - S%02dE%02d %s with quality %s was replaced by quality %s',
+                $v->getShow(),
+                $v->getSeason(),
+                $v->getNumber(),
+                $v->getTitle(),
+                $existing->getQuality()->getQualityName(),
+                $v->getQuality()->getQualityName()
+            ));
         }
 
         $this->queue = [];

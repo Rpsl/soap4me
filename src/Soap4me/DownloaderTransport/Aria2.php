@@ -12,12 +12,12 @@ class Aria2 extends AbstractTransport
     public function download(Episode $episode): bool
     {
         $this->logger->info(sprintf(
-            "download %s S%02dE%02d %s (%s) to %s",
+            'download %s S%02dE%02d %s (%s) to %s',
             $episode->getShow(),
             $episode->getSeason(),
             $episode->getNumber(),
             $episode->getTitle(),
-            $episode->getQuality(),
+            $episode->getQuality()->getQualityName(),
             $episode->getEpisodePath()
         ));
 
@@ -28,7 +28,7 @@ class Aria2 extends AbstractTransport
             try {
                 $this->logger->debug(
                     sprintf(
-                        "File %s already exists (%s)",
+                        'File %s already exists (%s)',
                         $episode->getEpisodePath(),
                         $this->filesystem->getSize($episode->getEpisodePath())
                     )
@@ -87,7 +87,7 @@ class Aria2 extends AbstractTransport
         try {
             $url = $episode->getUrl();
         } catch (CurlException $e) {
-            $this->logger->error(sprintf("Error when get url for episode :: %s", $e->getMessage()));
+            $this->logger->error(sprintf('Error when get url for episode :: %s', $e->getMessage()));
             return false;
         }
 
@@ -107,7 +107,7 @@ class Aria2 extends AbstractTransport
             ->addArgument($url)
             ->buildCommand();
 
-        $this->logger->debug(sprintf("%s", $command));
+        $this->logger->debug(sprintf('%s', $command));
 
         $result = $command->runSynchronous();
 

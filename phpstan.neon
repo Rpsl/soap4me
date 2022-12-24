@@ -6,6 +6,8 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
     ignoreErrors:
+        - "#Cannot access offset '(.*?)' on mixed#"
+        - '#should return (.*?) but returns mixed#'
         - '#Call to method (.*?) on an unknown class QueryTemplate[a-zA-Z]#'
         - '#Iterating over an object of an unknown class QueryTemplates[a-zA-Z]#'
         - '#(.*?)markup of static method phpQuery::newDocumentHTML(.*?)#'
