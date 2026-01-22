@@ -94,12 +94,12 @@ trait CurlTrait
             'cookies' => $this->getCookies(),
             'headers' => [
                 'Referer' => 'https://soap4youand.me/',
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:147.0) Gecko/20100101 Firefox/147.0',
             ],
             'allow_redirects' => true,
             'delay' => mt_rand(1, 5) * 1000,
             'version' => 1.0,
-            'debug' => false, // @todo to config
+            'debug' => true, // @todo to config
         ];
         return $payload;
     }

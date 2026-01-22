@@ -53,24 +53,24 @@ class Parser
 
         $token = trim($res->find('#token')->attr('data:token'));
 
-        $episodes = $res->find('li.ep');
+        $episodes = $res->find('.new-episode-card');
 
         $unwatched = [];
 
         foreach ($episodes as $ep) {
             try {
-                $quality = Quality::NewQuality(trim(pq($ep)->find('.quality')->text()));
+                $quality = Quality::NewQuality(trim(pq($ep)->find('.new-episode-quality')->text()));
 
                 $unwatched[] = new Episode(
-                    trim(pq($ep)->find('.soap')->text()),
-                    trim(pq($ep)->find('.en')->text()),
-                    (int)trim(pq($ep)->find('.play')->attr('data:season')),
-                    $this->parseEpisodeNumber(trim(pq($ep)->find('.nums')->text())),
+                    trim(pq($ep)->find('.new-episode-soap')->text()),
+                    trim(pq($ep)->find('.new-episode-title-en')->text()),
+                    (int)trim(pq($ep)->find('.theme-play')->attr('data:season')),
+                    $this->parseEpisodeNumber(trim(pq($ep)->find('.new-episode-nums')->text())),
                     $quality,
-                    trim(pq($ep)->find('.translate')->text()),
-                    trim(pq($ep)->find('.play')->attr('data:hash')),
-                    (int)trim(pq($ep)->find('.play')->attr('data:eid')),
-                    (int)trim(pq($ep)->find('.play')->attr('data:sid')),
+                    trim(pq($ep)->find('.new-episode-translate')->text()),
+                    trim(pq($ep)->find('.theme-play')->attr('data:hash')),
+                    (int)trim(pq($ep)->find('.theme-play')->attr('data:eid')),
+                    (int)trim(pq($ep)->find('.theme-play')->attr('data:sid')),
                     $token
                 );
             } catch (QualityException|ParseException $e) {
@@ -91,7 +91,7 @@ class Parser
         try {
             $result = $this->curl('/');
 
-            if ((bool)preg_match('~(вход на сайт)~usi', $result)) {
+            if ((bool)preg_match('~title="вход">войти</a~usi', $result)) {
                 return true;
             }
         } catch (CurlException $e) {
