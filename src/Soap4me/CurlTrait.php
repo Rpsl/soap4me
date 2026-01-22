@@ -99,7 +99,7 @@ trait CurlTrait
             'allow_redirects' => true,
             'delay' => mt_rand(1, 5) * 1000,
             'version' => 1.0,
-            'debug' => true, // @todo to config
+            'debug' => false, // @todo to config
         ];
         return $payload;
     }
